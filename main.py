@@ -5,20 +5,9 @@ import os
 from dotenv import load_dotenv
 import sys
 from prettytable import PrettyTable
-x = PrettyTable()
-x.field_names = ["City name", "Area", "Population", "Annual Rainfall"]
-x.add_row(["Adelaide",1295, 1158259, 600.5])
-x.add_row(["Brisbane",5905, 1857594, 1146.4])
-x.add_row(["Darwin", 112, 120900, 1714.7])
-x.add_row(["Hobart", 1357, 205556, 619.5])
-x.add_row(["Sydney", 2058, 4336374, 1214.8])
-x.add_row(["Melbourne", 1566, 3806092, 646.9])
-x.add_row(["Perth", 5386, 1554769, 869.4])
-print(x)
 
 
-
-def get_all_repositories_data(organization):
+def print_all_repositories_data(organization):
     all_info = []
     url = 'https://api.github.com/search/repositories'
 
@@ -53,6 +42,7 @@ def get_all_repositories_data(organization):
     repository_stats_table.field_names = ["Organization", "Total Number of Stars", "Total Number of Forks", "Average Number of Issues"]
     repository_stats_table.add_row([organization, stars_in_all_repositories, forks_in_all_repositories, average_issues_in_all_repositories])
     print(repository_stats_table)
+
 
 def get_aggregated_data(organization):
     headers = {'Accept': 'application/vnd.github.v3+json', "Authorization": "token " + os.environ.get('GITHUB_API_TOKEN')}
@@ -110,11 +100,10 @@ def __aggregate_number_of_issues(repository_items):
     return sum((map(lambda repository: repository['open_issues_count'], repository_items)))/len(repository_items)
 
 
-
 # get_aggregated_data(sys.argv[1])
 if __name__ == "__main__":
     # Credentials
     load_dotenv('token.env')
     # get_all_repositories_data(sys.argv[1])
-    get_all_repositories_data('automapper')
+    print_all_repositories_data('automapper')
     # get_aggregated_data(sys.argv[1])
