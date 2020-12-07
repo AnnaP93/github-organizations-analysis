@@ -3,6 +3,9 @@ import os
 from dotenv import load_dotenv
 import sys
 from prettytable import PrettyTable
+from sqlite_git_organizations_demo import __fill_organizations_table
+from sqlite_git_organizations_demo import __return_complete_table
+import datetime
 
 
 def get_all_repositories_data(organization):
@@ -11,7 +14,8 @@ def get_all_repositories_data(organization):
     is_final_page = False
     while not is_final_page:
         response = __get_api_response(url, organization)
-        for item in response.json()['items']:
+        convert_to_json = response.json()['items']
+        for item in convert_to_json:
             all_info.append(item)
         if 'next' in response.links:
             next_url = response.links['next']['url']
@@ -24,8 +28,9 @@ def get_all_repositories_data(organization):
     forks_in_all_repositories = sum(map(lambda repository: repository['forks_count'], all_info))
     average_issues_in_all_repositories = round(sum((map(lambda repository: repository['open_issues_count'],
                                                         all_info)))/len(all_info), 1)
+    time_of_record = datetime.datetime.now()
     all_repository_stats = [organization, stars_in_all_repositories, forks_in_all_repositories,
-                            average_issues_in_all_repositories]
+                            average_issues_in_all_repositories, time_of_record]
     return all_repository_stats
 
 
@@ -40,12 +45,11 @@ if __name__ == "__main__":
     # Credentials
     load_dotenv('token.env')
 
-    repository_stats_table: PrettyTable = PrettyTable()
-    repository_stats_table.field_names = ["Organization", "Total Number of Stars", "Total Number of Forks",
-                                          "Average Number of Issues"]
     organizations = sys.argv[1:]
     for single_company in organizations:
         single_company_stats = get_all_repositories_data(single_company)
-        repository_stats_table.add_row(single_company_stats)
-    print(repository_stats_table)
+        # inserting_data_into_database = __fill_organizations_table(single_company_stats)
+        complete_table = __return_complete_table()
+
+    print(complete_table)
 
