@@ -2,6 +2,11 @@ import sqlite3
 from prettytable import from_db_cursor
 
 
+def __open_connection():
+    conn = sqlite3.connect('github_companies_analysis.db')
+    return conn
+
+
 def create_organizations_table():
     connection = __open_connection()
     c = connection.cursor()
@@ -27,9 +32,11 @@ def __fill_organizations_table(single_company_data):
 
     selection = "SELECT * FROM organizations_stats WHERE organization = ?"
     c.execute(selection, (single_company_data[0],))
-    # c.close()
-    # connection.close()
-    return c.fetchall()
+
+    results = c.fetchall()
+    c.close()
+    connection.close()
+    return results
 
 
 def delete_extra_rows():
@@ -56,20 +63,11 @@ def add_time_column():
 # add_time_column()
 
 
-def __return_all_data():
-    connection = __open_connection()
-    c = connection.cursor()
-    c.execute("SELECT * FROM organizations_stats;")
-    c.close()
-    connection.close()
-    return c.fetchall()
-
-
 # Return pretty table
-def __return_pretty_table(company_stats):
+def __return_single_value_in_pretty_table(company_name):
     connection = __open_connection()
     c = connection.cursor()
-    selection = c.execute("SELECT * FROM organizations_stats WHERE organization = ?;", (company_stats,))
+    selection = c.execute("SELECT * FROM organizations_stats WHERE organization = ?;", (company_name,))
     actual_table = from_db_cursor(selection)
     c.close()
     connection.close()
@@ -87,9 +85,10 @@ def __update_record(record):
 
     selection = "SELECT * FROM organizations_stats WHERE organization = ?"
     c.execute(selection, (record[0],))
+    results = c.fetchall()
     c.close()
     connection.close()
-    return c.fetchall()
+    return results
 
 
 def __check_if_company_exist_in_table(company):
@@ -110,11 +109,17 @@ def create_index_for_table():
     create_index_query = "CREATE INDEX organizations_stats_organizations ON organizations_stats(organization);"
     c.execute(create_index_query)
     connection.commit()
-
     c.close()
     connection.close()
 
 
-def __open_connection():
-    conn = sqlite3.connect('github_companies_analysis.db')
-    return conn
+def __return_top_ten():
+    connection = __open_connection()
+    c = connection.cursor()
+    selection = c.execute("SELECT * FROM organizations_stats ORDER BY total_number_of_stars LIMIT 10;")
+    actual_table = from_db_cursor(selection)
+    c.close()
+    connection.close()
+    return actual_table
+
+
