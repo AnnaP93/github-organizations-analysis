@@ -8,7 +8,7 @@ Call organizations from GitHub repositories and see their total number of stars,
 
 It is a command-line program that returns aggregated GitHub stats for the requested organization's repository. It requires the Python interpreter, version 3.2+, SQLite database, and Personal Access Token (PAT) from GitHub. More information about creating PAT can be found here - https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 
-Please note that the program is using a virtual environment (venv) which settings might be found in the _requirements.txt_.
+Please note that the program is using a virtual environment (venv) which settings might be found in the `requirements.txt`.
 
 
 #####  Passing Personal Access Token via environment variables
